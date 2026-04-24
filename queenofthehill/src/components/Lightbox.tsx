@@ -4,10 +4,11 @@ import React, { useEffect } from "react";
 type Props = {
   src: string;
   alt?: string;
+  ct: number | 'Unknown';
   onClose: () => void;
 };
 
-export default function Lightbox({ src, alt, onClose }: Props) {
+export default function Lightbox({ src, alt, ct, onClose }: Props) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -23,6 +24,9 @@ export default function Lightbox({ src, alt, onClose }: Props) {
     >
       <div className="max-w-[90vw] max-h-[90vh] p-6 rounded-2xl bg-white dark:bg-slate-800 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <img src={src} alt={alt} className="w-full h-auto max-h-[75vh] rounded-lg" />
+        <div className="mt-4 flex justify-between items-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400">Carat Weight: <span className="font-semibold text-gray-900 dark:text-gray-100">{ct}</span></p>
+        </div>
         <div className="mt-4 flex justify-between items-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">Press ESC or click outside to close</p>
           <button

@@ -17,15 +17,23 @@ export default function Home() {
   const [champion, setChampion] = useState<Ring | null>(null);
   const [challengers, setChallengers] = useState<Ring[]>([]);
   const [history, setHistory] = useState<Ring[]>([]);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Ring | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [isChallengerNew, setIsChallengerNew] = useState(false);
 
   useEffect(() => {
     const s = shuffle(ringsData.slice());
     setChampion(s[0] ?? null);
     setChallengers(s.slice(1));
     setIsClient(true);
+    setIsChallengerNew(true);
   }, []);
+
+  useEffect(() => {
+    if (!isChallengerNew) return;
+    const timer = setTimeout(() => setIsChallengerNew(false), 600);
+    return () => clearTimeout(timer);
+  }, [isChallengerNew]);
 
   const remaining = challengers.length;
 
@@ -36,12 +44,14 @@ export default function Home() {
       // champion stays, remove current challenger
       setHistory((h) => [...h, champion]);
       setChallengers((prev) => prev.slice(1));
+      setIsChallengerNew(true);
     } else {
       // challenger wins, becomes new champion
       const next = challengers[0];
       setHistory((h) => [...h, next]);
       setChampion(next ?? null);
       setChallengers((prev) => prev.slice(1));
+      setIsChallengerNew(true);
     }
   }
 
@@ -116,7 +126,7 @@ export default function Home() {
                 src={champion.url}
                 alt={champion.name}
                 className="w-full h-64 object-cover cursor-pointer group-hover:scale-105 transition-transform"
-                onClick={() => setSelected(champion.url)}
+                onClick={() => setSelected(champion)}
               />
             </div>
             <h3 className="font-medium text-center mb-6 text-gray-900 dark:text-gray-100">{champion.name}</h3>
@@ -124,11 +134,11 @@ export default function Home() {
               onClick={() => handlePick("champion")}
               className="w-full px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white rounded-lg font-medium transition-all shadow-md hover:shadow-lg"
             >
-              This
+              ✓ Keep as Champion
             </button>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all">
+          <div className={`group bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all ${isChallengerNew ? "animate-fade-in" : ""}`}>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-semibold text-gray-700 dark:text-gray-300">Challenger</h2>
               <span className="text-2xl">✨</span>
@@ -138,7 +148,7 @@ export default function Home() {
                 src={challenger.url}
                 alt={challenger.name}
                 className="w-full h-64 object-cover cursor-pointer group-hover:scale-105 transition-transform"
-                onClick={() => setSelected(challenger.url)}
+                onClick={() => setSelected(challenger)}
               />
             </div>
             <h3 className="font-medium text-center mb-6 text-gray-900 dark:text-gray-100">{challenger.name}</h3>
@@ -146,7 +156,7 @@ export default function Home() {
               onClick={() => handlePick("challenger")}
               className="w-full px-6 py-3 bg-white dark:bg-slate-700 border-2 border-amber-600 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-slate-600 rounded-lg font-medium transition-all"
             >
-              That
+              ⚡ Choose This One
             </button>
           </div>
         </div>
@@ -160,7 +170,7 @@ export default function Home() {
           </button>
         </div>
       </div>
-      {selected && <Lightbox src={selected} alt="Ring" onClose={() => setSelected(null)} />}
+      {selected && <Lightbox src={selected.url} alt={selected.name} ct={selected.ct} onClose={() => setSelected(null)} />}
     </main>
   );
 }

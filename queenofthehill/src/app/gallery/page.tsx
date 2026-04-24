@@ -1,11 +1,11 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import ringsData from "../../data/rings";
+import ringsData, { Ring } from "../../data/rings";
 import Lightbox from "../../components/Lightbox";
 
 export default function Gallery() {
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Ring | null>(null);
   return (
     <main className="min-h-screen p-4 sm:p-6 bg-gradient-to-b from-amber-50 to-white dark:from-slate-900 dark:to-slate-800">
       <div className="max-w-6xl mx-auto">
@@ -27,7 +27,7 @@ export default function Gallery() {
                   src={r.url}
                   alt={r.name}
                   className="w-full h-full object-cover cursor-pointer group-hover:scale-110 transition-transform duration-500"
-                  onClick={() => setSelected(r.url)}
+                  onClick={() => setSelected(r)}
                 />
               </div>
               <div className="p-4">
@@ -36,7 +36,7 @@ export default function Gallery() {
             </div>
           ))}
         </div>
-        {selected && <Lightbox src={selected} alt="Ring" onClose={() => setSelected(null)} />}
+        {selected && <Lightbox src={selected.url} alt={selected.name} ct={selected.ct} onClose={() => setSelected(null)} />}
       </div>
     </main>
   );
